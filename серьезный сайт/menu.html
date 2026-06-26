@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню — ДронБоровичи</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,600;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Тот же фон */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 150, 255, 0.05) 0%, transparent 50%),
+                linear-gradient(rgba(255, 215, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 215, 0, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #0066ff;
+            top: -100px;
+            right: -100px;
+        }
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #d4a843;
+            bottom: -50px;
+            left: -50px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Навигация */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-decoration: none;
+            color: #fff;
+        }
+        .logo span {
+            color: #d4a843;
+        }
+        .logo small {
+            font-size: 14px;
+            font-weight: 300;
+            color: #8892b0;
+            margin-left: 10px;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: #8892b0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.3s;
+            padding: 8px 16px;
+            border-radius: 100px;
+        }
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-links a.active {
+            color: #d4a843;
+            background: rgba(212, 168, 67, 0.1);
+        }
+        .nav-links .btn-login {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .nav-links .btn-login:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Заголовок меню */
+        .menu-header {
+            padding: 40px 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .menu-header h1 {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+        .menu-header h1 span {
+            color: #d4a843;
+        }
+        .menu-header .delivery-info {
+            color: #8892b0;
+            font-size: 14px;
+        }
+        .menu-header .delivery-info strong {
+            color: #4facfe;
+        }
+
+        /* Фильтры/категории */
+        .categories {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 20px 0 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .category-btn {
+            padding: 10px 24px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            color: #8892b0;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+        .category-btn.active {
+            background: #d4a843;
+            color: #0a0a0f;
+            border-color: #d4a843;
+            box-shadow: 0 10px 30px -10px rgba(212, 168, 67, 0.3);
+        }
+
+        /* Сетка меню */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 30px 0 60px;
+        }
+
+        .menu-item {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 24px;
+            padding: 25px;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #d4a843, #f7e8a0);
+            opacity: 0;
+            transition: 0.4s;
+        }
+        .menu-item:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(212, 168, 67, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .menu-item:hover::before {
+            opacity: 1;
+        }
+
+        .menu-item .emoji-big {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .menu-item .item-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .menu-item .item-desc {
+            color: #8892b0;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            min-height: 40px;
+        }
+        .menu-item .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu-item .price {
+            font-size: 22px;
+            font-weight: 800;
+            color: #d4a843;
+        }
+        .menu-item .price small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #495670;
+        }
+        .btn-order {
+            padding: 10px 20px;
+            background: rgba(212, 168, 67, 0.15);
+            border: 1px solid rgba(212, 168, 67, 0.2);
+            border-radius: 60px;
+            color: #d4a843;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+        }
+        .btn-order:hover {
+            background: #d4a843;
+            color: #0a0a0f;
+            box-shadow: 0 10px 30px -10px rgba(212, 168, 67, 0.3);
+        }
+
+        /* Бейдж "популярное" */
+        .badge-popular {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(212, 168, 67, 0.15);
+            border: 1px solid rgba(212, 168, 67, 0.2);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #d4a843;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Корзина внизу (плавающая) */
+        .cart-floating {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 60px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+        }
+        .cart-floating .cart-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #8892b0;
+            font-size: 14px;
+        }
+        .cart-floating .cart-info .count {
+            color: #fff;
+            font-weight: 700;
+        }
+        .cart-floating .cart-info .total {
+            color: #d4a843;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .btn-checkout {
+            padding: 10px 28px;
+            background: #d4a843;
+            border: none;
+            border-radius: 60px;
+            color: #0a0a0f;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-checkout:hover {
+            background: #e6c35c;
+            transform: scale(1.02);
+        }
+
+        /* Футер */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 40px 0 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 14px;
+            color: #495670;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .footer a {
+            color: #495670;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .footer a:hover {
+            color: #d4a843;
+        }
+        .footer .city {
+            color: #d4a843;
+        }
+
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+            .menu-header h1 {
+                font-size: 30px;
+            }
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            .cart-floating {
+                width: 90%;
+                flex-wrap: wrap;
+                justify-content: center;
+                border-radius: 30px;
+                padding: 15px 20px;
+            }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            .categories {
+                gap: 6px;
+            }
+            .category-btn {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+
+        <!-- Навигация -->
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                🚁 <span>Dron</span>Borovichi <small>• 53°58' N</small>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Главная</a>
+                <a href="menu.html" class="active">Меню</a>
+                <a href="login.html" class="btn-login">🔑 Войти</a>
+            </div>
+        </nav>
+
+        <!-- Заголовок -->
+        <div class="menu-header">
+            <div>
+                <h1>Наше <span>меню</span></h1>
+                <div style="color: #8892b0; font-size: 14px; margin-top: 5px;">
+                    🛸 Доставка дронами по всему городу за <strong style="color: #4facfe;">15 минут</strong>
+                </div>
+            </div>
+            <div class="delivery-info">
+                ⏱️ Работаем: 10:00 — 23:00<br>
+                📍 <strong>Боровичи</strong>, вся зона покрытия
+            </div>
+        </div>
+
+        <!-- Категории (фильтры) -->
+        <div class="categories">
+            <button class="category-btn active" data-category="all">🍽️ Всё</button>
+            <button class="category-btn" data-category="pizza">🍕 Пицца</button>
+            <button class="category-btn" data-category="sushi">🍣 Суши</button>
+            <button class="category-btn" data-category="burgers">🍔 Бургеры</button>
+            <button class="category-btn" data-category="drinks">🥤 Напитки</button>
+            <button class="category-btn" data-category="desserts">🧁 Десерты</button>
+        </div>
+
+        <!-- Сетка меню -->
+        <div class="menu-grid" id="menuGrid">
+            <!-- Товары будут вставлены через JS -->
+        </div>
+
+        <!-- Плавающая корзина -->
+        <div class="cart-floating" id="cartFloating">
+            <div class="cart-info">
+                <span>🛒</span>
+                <span class="count" id="cartCount">0</span>
+                <span>товаров</span>
+                <span>•</span>
+                <span class="total" id="cartTotal">0 ₽</span>
+            </div>
+            <button class="btn-checkout" onclick="checkout()">Оформить заказ ✦</button>
+        </div>
+
+        <!-- Футер -->
+        <div class="footer">
+            <div>© 2026 DronBorovichi. Доставка только в <span class="city">Боровичах</span></div>
+            <div>
+                <a href="#">Политика</a>
+                <span style="margin: 0 10px;">|</span>
+                <a href="#">Контакты</a>
+                <span style="margin: 0 10px;">|</span>
+                <a href="#" style="color: #d4a843;">+7 (816) 555-01-01</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // === ДАННЫЕ МЕНЮ ===
+        const menuItems = [
+            // Пицца
+            { id: 1, name: 'Маргарита', desc: 'Томатный соус, моцарелла, базилик', price: 499, emoji: '🍕', category: 'pizza', popular: true },
+            { id: 2, name: 'Пепперони', desc: 'Острая колбаса, моцарелла, томатный соус', price: 599, emoji: '🍕', category: 'pizza', popular: true },
+            { id: 3, name: 'Четыре сыра', desc: 'Моцарелла, дорблю, пармезан, чеддер', price: 649, emoji: '🧀', category: 'pizza', popular: false },
+            { id: 4, name: 'Гавайская', desc: 'Ветчина, ананас, моцарелла, томатный соус', price: 579, emoji: '🍍', category: 'pizza', popular: false },
+            // Суши
+            { id: 5, name: 'Филадельфия', desc: 'Лосось, сливочный сыр, огурец, нори', price: 699, emoji: '🍣', category: 'sushi', popular: true },
+            { id: 6, name: 'Калифорния', desc: 'Краб, авокадо, огурец, масаго', price: 649, emoji: '🍣', category: 'sushi', popular: false },
+            { id: 7, name: 'Нигири с лососем', desc: 'Рис, лосось, соевый соус', price: 399, emoji: '🐟', category: 'sushi', popular: false },
+            // Бургеры
+            { id: 8, name: 'Чизбургер', desc: 'Говяжья котлета, чеддер, салат, томаты', price: 449, emoji: '🍔', category: 'burgers', popular: true },
+            { id: 9, name: 'Бургер с курицей', desc: 'Куриное филе, соус BBQ, салат, лук', price: 399, emoji: '🍗', category: 'burgers', popular: false },
+            { id: 10, name: 'Двойной бургер', desc: 'Две котлеты, двойной сыр, бекон', price: 589, emoji: '🔥', category: 'burgers', popular: false },
+            // Напитки
+            { id: 11, name: 'Лимонад', desc: 'Домашний лимонад с мятой и лимоном', price: 199, emoji: '🍋', category: 'drinks', popular: false },
+            { id: 12, name: 'Матча латте', desc: 'Зелёный чай с молоком, холодный', price: 249, emoji: '🍵', category: 'drinks', popular: false },
+            { id: 13, name: 'Кола', desc: 'Классическая кола со льдом', price: 149, emoji: '🥤', category: 'drinks', popular: false },
+            // Десерты
+            { id: 14, name: 'Чизкейк', desc: 'Нежный чизкейк с ягодным соусом', price: 349, emoji: '🍰', category: 'desserts', popular: true },
+            { id: 15, name: 'Тирамису', desc: 'Итальянский десерт с кофе и маскарпоне', price: 399, emoji: '🤎', category: 'desserts', popular: false },
+        ];
+
+        // === КОРЗИНА ===
+        let cart = [];
+
+        // === ОТРИСОВКА МЕНЮ ===
+        function renderMenu(category = 'all') {
+            const grid = document.getElementById('menuGrid');
+            let filtered = category === 'all' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === category);
+
+            // Сначала популярные
+            filtered.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="menu-item" data-id="${item.id}">
+                    ${item.popular ? '<span class="badge-popular">⭐ Популярное</span>' : ''}
+                    <span class="emoji-big">${item.emoji}</span>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-desc">${item.desc}</div>
+                    <div class="item-footer">
+                        <span class="price">${item.price} <small>₽</small></span>
+                        <button class="btn-order" onclick="addToCart(${item.id})">+ В корзину</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // === ДОБАВЛЕНИЕ В КОРЗИНУ ===
+        function addToCart(id) {
+            const item = menuItems.find(i => i.id === id);
+            if (!item) return;
+
+            const existing = cart.find(i => i.id === id);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+
+            updateCartUI();
+            
+            // Анимация кнопки
+            const btn = document.querySelector(`.menu-item[data-id="${id}"] .btn-order`);
+            if (btn) {
+                btn.textContent = '✅ В корзине';
+                btn.style.background = 'rgba(76, 175, 80, 0.2)';
+                btn.style.borderColor = 'rgba(76, 175, 80, 0.3)';
+                btn.style.color = '#4caf50';
+                setTimeout(() => {
+                    btn.textContent = '+ В корзину';
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                    btn.style.color = '';
+                }, 1500);
+            }
+        }
+
+        // === ОБНОВЛЕНИЕ КОРЗИНЫ ===
+        function updateCartUI() {
+            const count = cart.reduce((sum, i) => sum + i.quantity, 0);
+            const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+            document.getElementById('cartCount').textContent = count;
+            document.getElementById('cartTotal').textContent = total + ' ₽';
+
+            // Анимация
+            const floating = document.getElementById('cartFloating');
+            floating.style.transform = 'translateX(-50%) scale(1.03)';
+            setTimeout(() => {
+                floating.style.transform = 'translateX(-50%) scale(1)';
+            }, 200);
+        }
+
+        // === ОФОРМЛЕНИЕ ЗАКАЗА ===
+        function checkout() {
+            if (cart.length === 0) {
+                alert('🛒 Корзина пуста! Добавьте блюда.');
+                return;
+            }
+            const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+            const items = cart.map(i => `${i.name} ×${i.quantity}`).join(', ');
+            
+            // Здесь будет редирект на оформление заказа
+            alert(`🚁 Заказ оформлен!\n\nБлюда: ${items}\nИтого: ${total} ₽\n\nДрон вылетит в течение 2 минут. Спасибо, что с нами!`);
+            
+            // Очистка корзины (раскомментировать для реального использования)
+            // cart = [];
+            // updateCartUI();
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('🛒 Корзина пуста! Добавьте блюда.');
+            return;
+            }
+        // Перенаправление на страницу заказа
+        window.location.href = 'order.html';
+        }
+
+        // === ФИЛЬТРЫ (КАТЕГОРИИ) ===
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderMenu(this.dataset.category);
+            });
+        });
+
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        renderMenu('all');
+        updateCartUI();
+    </script>
+
+</body>
+</html>
